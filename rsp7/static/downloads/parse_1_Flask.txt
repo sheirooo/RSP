@@ -1,0 +1,14 @@
+• [2023-07-14] Что нового в Python за июнь — обсуждаем в прямом эфире
+  https://habr.com/ru/news/747966/
+
+• [2024-10-17] Представлен Ditto — открытый генератор исходного кода приложений воFlaskпо текстовому запросу
+  https://habr.com/ru/news/851246/
+
+• [2020-07-25] Flask+ Dependency Injector — руководство по применению dependency injection
+  https://habr.com/ru/articles/512242/
+
+• [2013-09-10] Мега-УчебникFlask, Часть 1: «Привет, Мир!»
+  https://habr.com/ru/articles/193242/
+
+• [2018-01-09] Мега-УчебникFlask, Часть 4: База данных (издание 2018)
+  https://habr.com/ru/articles/346344/

@@ -1,0 +1,14 @@
+2025-12-19 02:19:50,114 - 
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                age INTEGER
+            )
+        
+2025-12-19 02:19:50,158 - SELECT COUNT(*) FROM users
+2025-12-19 02:19:50,158 - BEGIN 
+2025-12-19 02:19:50,159 - INSERT INTO users (name, age) VALUES ('Alice', 25)
+2025-12-19 02:19:50,160 - INSERT INTO users (name, age) VALUES ('Bob', 30)
+2025-12-19 02:19:50,160 - INSERT INTO users (name, age) VALUES ('Charlie', 35)
+2025-12-19 02:19:50,160 - COMMIT
+2025-12-19 02:20:52,469 - SELECT * FROM users

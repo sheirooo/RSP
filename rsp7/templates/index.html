@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Мои документы{% endblock %}
+{% block content %}
+<div style="text-align:center;margin:30px 0;">
+    <form method="post" action="{{ url_for('create_doc') }}" style="display:inline;">
+        <button class="btn btn-success" style="font-size:1.2em;padding:15px 30px;">Создать новый документ</button>
+    </form>
+</div>
+
+<h2 style="text-align:center;">Ваши документы</h2>
+
+{% if docs %}
+<div style="display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));">
+    {% for doc in docs %}
+    <div style="background:white;padding:25px;border-radius:16px;box-shadow:0 6px 20px rgba(0,0,0,0.1);position:relative;">
+        <h3><a href="{{ url_for('doc', doc_id=doc.id) }}" style="color:#4361ee;text-decoration:none;">Документ #{{ doc.id }}</a></h3>
+        {% if doc.is_owner %}
+            <span style="background:#e3f2fd;color:#1976d2;padding:6px 12px;border-radius:20px;font-size:0.9em;">Владелец</span>
+            <form method="post" action="{{ url_for('delete_doc', doc_id=doc.id) }}" style="position:absolute;top:15px;right:15px;display:inline;"
+                  onsubmit="return confirm('Удалить навсегда?')">
+                <button type="submit" class="btn btn-danger" style="padding:8px 12px;">Удалить</button>
+            </form>
+        {% else %}
+            <span style="background:#fff3e0;color:#ef6c00;padding:6px 12px;border-radius:20px;font-size:0.9em;">{{ doc.access_level }}</span>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div style="text-align:center;padding:80px;color:#888;">
+    <h3>Документов пока нет</h3>
+    <p>Создайте первый документ</p>
+</div>
+{% endif %}
+{% endblock %}

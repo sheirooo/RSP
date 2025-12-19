@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Документ #{{ doc_id }}{% endblock %}
+{% block content %}
+
+<div style="background:white;padding:30px;border-radius:16px;box-shadow:0 6px 25px rgba(0,0,0,0.1);margin-bottom:25px;">
+    <h2>Документ #{{ doc_id }} 
+        <small style="float:right;">
+            Доступ: <strong>{% if is_owner %}Владелец{% else %}{{ level }}{% endif %}</strong>
+        </small>
+    </h2>
+
+    {% if is_owner %}
+    <div style="background:#f0f8ff;padding:20px;border-radius:12px;margin:20px 0;">
+        <h4>Парсинг Habr.com</h4>
+        <form id="parse-form">
+            <input type="hidden" name="doc_id" value="{{ doc_id }}">
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                <input name="query" placeholder="Запрос, например: Flask" style="flex:1;min-width:250px;padding:12px;border-radius:12px;border:2px solid #ddd;" required>
+                <button type="submit" style="padding:12px 28px;background:#4361ee;color:white;border:none;border-radius:12px;font-weight:bold;">
+                    Спарсить и сохранить
+                </button>
+            </div>
+        </form>
+        <div id="parse-status" style="margin-top:15px;"></div>
+    </div>
+    {% endif %}
+
+    <textarea id="content" style="width:100%;height:500px;padding:20px;border-radius:12px;border:2px solid #ddd;font-family:monospace;font-size:15px;"
+              {% if level != 'edit' %}readonly{% endif %}>{{ doc.content }}</textarea>
+
+    {% if level in ['comment', 'edit'] %}
+    <div style="margin:25px 0;display:flex;gap:12px;">
+        <input id="comment_text" placeholder="Комментарий..." style="flex:1;padding:12px;border-radius:12px;border:2px solid #ddd;">
+        <input id="comment_pos" type="number" value="0" style="width:100px;padding:12px;border-radius:12px;border:2px solid #ddd;">
+        <button onclick="sendComment()" style="padding:12px 24px;background:#4361ee;color:white;border:none;border-radius:12px;">Отправить</button>
+    </div>
+    {% endif %}
+
+    {% if is_owner %}
+    <div style="background:#f0f4ff;padding:25px;border-radius:12px;margin:30px 0;">
+        <h4>Поделиться</h4>
+        <form method="post" action="{{ url_for('share', doc_id=doc_id) }}" style="display:flex;gap:12px;flex-wrap:wrap;">
+            <input name="username" placeholder="Логин" required style="flex:1;min-width:200px;">
+            <select name="level" style="padding:12px;border-radius:12px;">
+                <option value="view">Только просмотр</option>
+                <option value="comment">Комментарии</option>
+                <option value="edit">Редактирование</option>
+            </select>
+            <button type="submit" class="btn btn-success">Поделиться</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <h4 style="margin:40px 0 20px;">Комментарии</h4>
+    <div id="comments"></div>
+
+    <div style="text-align:center;margin-top:40px;">
+        <a href="{{ url_for('index') }}" class="btn" style="background:#636e72;color:white;padding:12px 28px;border-radius:12px;">Назад</a>
+    </div>
+</div>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+    const docId = {{ doc_id|tojson }};
+    const userLevel = {{ level|tojson }};
+    const socket = io();
+    socket.emit('join', { doc_id: docId });
+
+    socket.on('init', d => {
+        if (!document.getElementById('content').value.trim()) document.getElementById('content').value = d.content || '';
+        renderComments(d.comments || []);
+    });
+    socket.on('update_text', d => document.getElementById('content').value = d.content);
+    socket.on('new_comment', addCommentToPage);
+
+    document.getElementById('content')?.addEventListener('input', function() {
+        if (userLevel === 'edit') socket.emit('edit', { doc_id: docId, content: this.value });
+    });
+
+    window.sendComment = function() {
+        const text = document.getElementById('comment_text').value.trim();
+        const pos = parseInt(document.getElementById('comment_pos').value) || 0;
+        if (text && (userLevel === 'comment' || userLevel === 'edit')) {
+            socket.emit('add_comment', { doc_id: docId, text, position: pos });
+            document.getElementById('comment_text').value = '';
+        }
+    };
+
+    // ПАРСИНГ
+    document.getElementById('parse-form')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const status = document.getElementById('parse-status');
+        status.innerHTML = 'Парсинг...';
+        try {
+            const r = await fetch('/parse', { method: 'POST', body: formData });
+            const data = await r.json();
+            if (data.success) {
+                status.innerHTML = `<span style="color:green;">Готово! <a href="/static/downloads/${data.filename}" download>Скачать файл</a></span>`;
+                document.getElementById('content').value = data.content;
+            } else {
+                status.innerHTML = `<span style="color:red;">${data.error}</span>`;
+            }
+        } catch (err) {
+            status.innerHTML = '<span style="color:red;">Сайт недоступен или ошибка сети</span>';
+        }
+    });
+
+    function renderComments(comments) {
+        const div = document.getElementById('comments');
+        div.innerHTML = '';
+        comments.forEach(addCommentToPage);
+    }
+    function addCommentToPage(c) {
+        const el = document.createElement('div');
+        el.style = 'background:#f8f9fa;padding:15px;margin:10px 0;border-radius:12px;border-left:5px solid #4361ee;';
+        el.innerHTML = `<strong>${c.user}</strong> (позиция ${c.position})<br>${c.text.replace(/\n/g, '<br>')}`;
+        document.getElementById('comments').appendChild(el);
+    }
+</script>
+{% endblock %}

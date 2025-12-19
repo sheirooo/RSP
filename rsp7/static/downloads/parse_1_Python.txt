@@ -1,0 +1,14 @@
+• [2025-10-08] РелизPython3.14
+  https://habr.com/ru/news/954394/
+
+• [2022-01-20] Курс «Pythonдля инженеров». Старт 3 потока 31 января
+  https://habr.com/ru/companies/slurm/news/646825/
+
+• [2024-12-24] Один из ключевых разработчиков CPython Тим Питерс вернулся в сообществоPythonпосле трехмесячного бана
+  https://habr.com/ru/news/869196/
+
+• [2021-12-13] Жаждущим автоматизации: открытый урок «ChatOps c Errbot наPython», 21 декабря
+  https://habr.com/ru/companies/slurm/news/595093/
+
+• [2023-09-19] Microsoft представила дополнениеPythonEditor от команды Excel Labs
+  https://habr.com/ru/news/761862/

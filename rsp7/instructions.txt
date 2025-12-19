@@ -1,0 +1,77 @@
+Часть 1. Основы работы с Docker (Задания 1–2)
+
+Проверка версии Docker
+docker --version
+
+Тестовый запуск контейнера
+docker run hello-world
+
+Просмотр локальных образов
+docker images
+
+Просмотр всех контейнеров (активных и остановленных)
+docker ps -a
+
+
+Часть 2. Создание собственного Docker-образа (Задания 3–4)
+
+Сборка образа из Dockerfile (в папке проекта lab5)
+docker build -t collab-app .
+
+Запуск контейнера из собранного образа (ручной способ)
+docker run -p 5000:5000 --name my-collab-app collab-app
+
+(Дополнительно с volume для БД, если нужно вручную)
+docker run -p 5000:5000 --name my-collab-app -v ./instance:/app/instance collab-app
+
+Остановка контейнера
+docker stop my-collab-app
+
+Удаление контейнера
+docker rm my-collab-app
+
+Или принудительно
+docker rm -f my-collab-app
+
+Часть 3. Использование Docker Compose (Задания 5–6)
+
+Запуск приложения через Docker Compose (с пересборкой образа)
+docker-compose up --build
+
+Запуск в фоновом режиме
+docker-compose up -d
+
+Остановка контейнеров
+docker-compose down
+
+Остановка с удалением volumes (сброс БД и файлов — осторожно!)
+docker-compose down -v
+
+Просмотр логов сервиса web
+docker-compose logs web
+
+Или в реальном времени
+docker-compose logs -f web
+
+Дополнительные полезные команды (использовались для отладки и оптимизации)
+
+Просмотр запущенных контейнеров
+docker ps
+
+Просмотр всех volumes
+docker volume ls
+
+Остановка всех контейнеров (если что-то зависло)
+docker stop $(docker ps -q)
+
+Команды, которые соответствуют конкретным пунктам лабораторной работы
+
+Задание 2: docker images, docker ps, docker ps -a, docker run hello-world
+Задание 3: создание Dockerfile + docker build -t collab-app .
+Задание 4: docker run -p 5000:5000 ...
+Задание 5: создание docker-compose.yml + docker-compose up
+Задание 6: использование volumes в docker-compose.yml для сохранения БД и файлов
+Задание 8:
+Автоматический перезапуск → restart: always в docker-compose.yml
+Логи → docker-compose logs
+Многоэтапная сборка → обновлённый Dockerfile с multi-stage

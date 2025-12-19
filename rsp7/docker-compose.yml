@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .                    # Собирает образ из твоего Dockerfile в этой же папке
+    ports:
+      - "5000:5000"             # Пробрасывает порт на localhost
+    volumes:
+      - .:/app                  # Монтирует весь код проекта (чтобы изменения сразу применялись без пересборки)
+      - db-data:/app/instance   # Сохраняет папку instance (там лежит collab.db)
+      - downloads:/app/static/downloads  # Сохраняет скачанные файлы парсинга
+    restart: always             # Автоматический перезапуск при падении (для Задания 8)
+    stdin_open: true            # Нужно для корректной работы SocketIO
+    tty: true                   # Тоже для SocketIO и интерактивности
+
+volumes:
+  db-data:                      # Именованный volume для БД
+  downloads:                    # Именованный volume для файлов
